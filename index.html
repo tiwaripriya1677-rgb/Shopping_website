@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LUXE LANE</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{background:#f8f8f8;color:#111;overflow-x:hidden;transition:.35s}
+    body.dark{background:#111;color:#eee}
+    body.dark .card,body.dark .auth-box,body.dark header{background:#1c1c1c;color:#fff}
+    body.dark nav a,body.dark h2,body.dark h3,body.dark p,body.dark li{color:#fff}
+    body.dark input,body.dark select{background:#2a2a2a;color:#fff;border-color:#444}
+    #loader{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .8s}
+    #loader h1{letter-spacing:12px;font-size:3rem;animation:pulse 1.8s infinite}
+    @keyframes pulse{50%{opacity:.3;transform:scale(.96)}}
+    header{position:fixed;top:0;width:100%;padding:20px 60px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);z-index:99}
+    nav{display:flex;align-items:center;gap:18px}
+    #guestNav{display:flex;align-items:center;gap:18px}
+    nav a{text-decoration:none;color:#111;cursor:pointer}
+    .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:58px;height:30px;background:#ddd;border-radius:30px;position:relative;cursor:pointer;transition:.3s;flex-shrink:0}
+    .theme-toggle::before{content:'🌙';position:absolute;left:4px;width:22px;height:22px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.3s}
+    body.dark .theme-toggle{background:#444}
+    body.dark .theme-toggle::before{content:'☀️';left:32px}
+    .hero{height:100vh;background:url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1400') center top/cover;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff}
+    .hero .content{background:rgba(0,0,0,.25);padding:40px;border-radius:24px;animation:fadeUp 1.2s}.hidden{display:none}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+    .btn,.cart{display:inline-block;margin-top:20px;padding:12px 24px;background:#111;color:#fff;text-decoration:none;border:none;border-radius:40px;cursor:pointer}
+    .products,.page{padding:120px 60px 80px}.page{min-height:100vh}
+    .products h2{text-align:center;margin-bottom:40px;font-size:2.4rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px}
+    .card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.08);transition:.4s}.card:hover{transform:translateY(-12px)}
+    .card img{width:100%;height:320px;object-fit:cover}.info{padding:20px}.price{font-weight:bold;margin:10px 0}
+    .auth-box{max-width:420px;margin:auto;background:#fff;padding:30px;border-radius:24px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
+    input{padding:14px;width:100%;border:1px solid #ddd;border-radius:30px;margin:10px 0}
+    .newsletter{padding:80px 20px;background:#111;color:#fff;text-align:center} footer{text-align:center;padding:24px;background:#000;color:#fff}
+  </style>
+</head>
+<body>
+<div id="loader"><h1>LUXE LANE</h1></div>
+<header>
+<h2 onclick="showPage('home')">LUXE LANE</h2>
+<nav>
+<a onclick="showPage('home')">Home</a>
+<a onclick="showPage('cart')">Cart (<span id='cartCount'>0</span>)</a>
+<a onclick="showPage('productsPage')">All Products</a>
+<a onclick="showPage('wishlist')">Wishlist</a>
+<span id='guestNav'><a onclick="showPage('login')">Login</a> <a onclick="showPage('signup')">Signup</a></span>
+<span id='userNav' class='hidden'><a onclick="showPage('account')">Account</a></span>
+<span class='theme-toggle' onclick='toggleDarkMode()'></span>
+</nav>
+</header>
+<section id='home'>
+<section class='hero'><div class='content'><h1>Modern Fashion, Timeless Style</h1><p>Minimal pieces for every season.</p><a href='#products' class='btn'>Shop Now</a></div></section>
+<section class='products' id='products'><h2>New Collection</h2><div class='grid' id='productGrid'></div></section>
+<section class='newsletter'><h2>Join Our Newsletter</h2><p>Get updates on new arrivals.</p></section>
+</section>
+<section id='cart' class='page hidden'><h2>Your Cart</h2><div id='cartItems'></div><div id='checkoutBox' class='auth-box' style='margin-top:30px'><h3>Secure Payment</h3><input id='cardNumber' placeholder='Card Number'><input id='cardName' placeholder='Name on Card'><input id='expiry' placeholder='MM/YY'><input id='cvv' placeholder='CVV'><button class='btn' onclick='processPayment()'>Pay Now</button><p id='paymentMsg' style='margin-top:15px'></p></div></section>
+<section id='login' class='page hidden'><div class='auth-box'><h2>Login</h2><input id='loginName' placeholder='Your name'><button class='btn' onclick='loginUser()'>Login</button></div></section>
+<section id='signup' class='page hidden'><div class='auth-box'><h2>Signup</h2><input placeholder='Full name'><input placeholder='Email'><button class='btn' onclick="showPage('login')">Create Account</button></div></section>
+<section id='account' class='page hidden'><div class='auth-box'><h2>My Account</h2><p id='userName'>Name: Guest</p><p>Email: customer@luxelane.com</p><p>Member Since: 2026</p><h3 style='margin-top:20px'>Previous Orders</h3><ul id='orderList'><li>Classic Coat - Delivered</li><li>Urban Shirt - Delivered</li></ul></div></section>
+<section id='productsPage' class='page hidden'><h2>All Products</h2><div class='auth-box' style='max-width:100%;margin-bottom:30px'><input id='searchInput' placeholder='Search products...' onkeyup='renderProducts()'><select id='filterSelect' onchange='renderProducts()' style='padding:14px;width:100%;border:1px solid #ddd;border-radius:30px;margin-top:10px'><option value='all'>All Categories</option><option value='outerwear'>Outerwear</option><option value='tops'>Tops</option><option value='accessories'>Accessories</option></select></div><div class='grid' id='allProductsGrid'></div></section>
+<section id='wishlist' class='page hidden'><h2>My Wishlist</h2><div id='wishlistItems'></div></section>
+<footer>© 2026 LUXE LANE — All Rights Reserved</footer>
+<script>
+const products=[
+{name:'Classic Coat',price:'₹4,999',category:'outerwear',img:'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=900'},
+{name:'Urban Shirt',price:'₹2,299',category:'tops',img:'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=900'},
+{name:'Minimal Dress',price:'₹3,499',category:'tops',img:'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=900'},
+{name:'Leather Bag',price:'₹5,799',category:'accessories',img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=900'},
+{name:'Winter Jacket',price:'₹6,299',category:'outerwear',img:'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900'},
+{name:'Premium Scarf',price:'₹1,299',category:'accessories',img:'https://images.unsplash.com/photo-1603252109303-2751441dd157?q=80&w=900'}
+];
+let cart=[];
+let wishlist=[];
+const grid=document.getElementById('productGrid');
+function productCard(p){return `<div class='card'><img src='${p.img}'><div class='info'><h3>${p.name}</h3><p class='price'>${p.price}</p><button class='cart' onclick='addToCart(${JSON.stringify(JSON.stringify(p))})'>Add to Cart</button> <button class='cart' onclick='addToWishlist(${JSON.stringify(JSON.stringify(p))})'>♡</button></div></div>`}
+grid.innerHTML=products.slice(0,3).map(productCard).join('');
+function renderProducts(){const term=document.getElementById('searchInput')?.value.toLowerCase()||'';const cat=document.getElementById('filterSelect')?.value||'all';const filtered=products.filter(p=>(cat==='all'||p.category===cat)&&p.name.toLowerCase().includes(term));document.getElementById('allProductsGrid').innerHTML=filtered.map(productCard).join('');}
+renderProducts();
+function showPage(id){['home','cart','login','signup','account','productsPage','wishlist'].forEach(p=>document.getElementById(p).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');window.scrollTo(0,0)}
+function addToCart(item){const p=JSON.parse(item);cart.push(p);document.getElementById('cartCount').textContent=cart.length;renderCart();}
+function renderCart(){const subtotal=cart.reduce((s,i)=>s+parseInt(i.price.replace(/[^0-9]/g,'')),0);const gst=Math.round(subtotal*0.18);const total=subtotal+gst;document.getElementById('cartItems').innerHTML=cart.map((i,index)=>`<div class='card' style='margin:20px 0'><div class='info'><h3>${i.name}</h3><p>${i.price}</p><button class='cart' onclick='removeFromCart(${index})'>Remove</button></div></div>`).join('')||( '<p>No items yet</p>'); if(cart.length){document.getElementById('cartItems').innerHTML += `<div class='auth-box'><p>Subtotal: ₹${subtotal}</p><p>GST (18%): ₹${gst}</p><h3>Total: ₹${total}</h3></div>`;}}
+function removeFromCart(index){cart.splice(index,1);document.getElementById('cartCount').textContent=cart.length;renderCart();}
+function addToWishlist(item){wishlist.push(JSON.parse(item));renderWishlist();}
+function renderWishlist(){document.getElementById('wishlistItems').innerHTML=wishlist.map(i=>`<div class='card' style='margin:20px 0'><div class='info'><h3>${i.name}</h3><p>${i.price}</p></div></div>`).join('')||'<p>No wishlist items</p>';}
+function toggleDarkMode(){document.body.classList.toggle('dark');}
+function loginUser(){const name=document.getElementById('loginName').value||'Customer';document.getElementById('userName').textContent='Name: '+name;document.getElementById('guestNav').classList.add('hidden');document.getElementById('userNav').classList.remove('hidden');showPage('account');}
+function processPayment(){
+ const card=document.getElementById('cardNumber').value.trim();
+ const name=document.getElementById('cardName').value.trim();
+ const expiry=document.getElementById('expiry').value.trim();
+ const cvv=document.getElementById('cvv').value.trim();
+ const msg=document.getElementById('paymentMsg');
+ if(cart.length===0){msg.textContent='Your cart is empty.';return;}
+ if(card.length<12||!name||!expiry||cvv.length<3){msg.textContent='Please fill valid payment details.';return;}
+ msg.textContent='Payment successful. Your order has been placed.';
+ const orders=document.getElementById('orderList');
+ cart.forEach(i=>{orders.innerHTML += `<li>${i.name} - Processing</li>`;});
+ cart=[];
+ document.getElementById('cartCount').textContent='0';
+ renderCart();
+ setTimeout(()=>showPage('account'),1200);
+}
+window.addEventListener('load',()=>setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>loader.style.display='none',800)},1500));
+</script>
+</body>
+</html>
